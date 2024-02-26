@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Sliders</title>
+    <style>
+        /* 样式表 */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .slider {
+            width: 80%; /* 进度条宽度 */
+            height: 20px; /* 进度条高度 */
+            background-color: #ddd; /* 进度条背景色 */
+            margin: 20px auto; /* 上下外边距20px，左右自动居中 */
+            position: relative; /* 相对定位，用于子元素绝对定位的参考 */
+        }
+
+        .slider-handle {
+            position: absolute; /* 绝对定位，相对于包含它的 .slider 元素 */
+            width: 20px; /* 滑块宽度 */
+            height: 20px; /* 滑块高度 */
+            background-color: #333; /* 滑块颜色 */
+            cursor: pointer; /* 鼠标悬停时显示指针 */
+            border-radius: 50%; /* 圆形滑块 */
+            top: 50%; /* 滑块垂直居中 */
+            transform: translate(-50%, -50%); /* 水平和垂直居中 */
+        }
+
+        .slider-tooltip {
+            position: absolute; /* 绝对定位 */
+            bottom: -40px; /* 距离底部 40px */
+            left: 50%; /* 水平居中 */
+            transform: translateX(-50%); /* 水平居中 */
+        }
+
+        .slider-segment {
+            position: absolute; /* 绝对定位 */
+            background-color: #333; /* 分段线颜色 */
+            width: 2px; /* 分段线宽度 */
+            height: 10px; /* 分段线高度 */
+            top: 50%; /* 分段线垂直居中 */
+            transform: translateY(-50%); /* 分段线垂直居中 */
+        }
+    </style>
+</head>
+<body>
+
+<h2>Smooth Slider1</h2>
+<div class="slider smooth-slider" id="smoothSlider1">
+    <div class="slider-handle smooth-handle" id="smoothHandle"></div>
+    <div class="slider-tooltip smooth-tooltip" id="smoothTooltip">0.00</div>
+</div>
+<br>
+<br>
+<h2>Smooth Slider2</h2>
+<div class="slider smooth-slider" id="smoothSlider2">
+    <div class="slider-handle smooth-handle" id="smoothHandle2"></div>
+    <div class="slider-tooltip smooth-tooltip" id="smoothTooltip2">0.00</div>
+</div>
+<br>
+<br>
+<h2>Segmented Slider1</h2>
+<div class="slider segmented-slider" id="segmentedSlider1">
+    <div class="slider-handle segmented-handle" id="segmentedHandle"></div>
+    <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip">0</div>
+    <div class="slider-segment" style="display: none"></div>
+</div>
+<br>
+<br>
+<h2>Segmented Slider2</h2>
+<div class="slider segmented-slider" id="segmentedSlider2">
+    <div class="slider-handle segmented-handle" id="segmentedHandle2"></div>
+    <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip2">0</div>
+    <div class="slider-segment" style="display: none"></div>
+</div>
+
+<script>
+    // 在页面加载时初始化Slider
+    window.addEventListener('DOMContentLoaded', function () {
+        setupSlider([
+            {
+                sliderId: 'smoothSlider1',
+                sliderClass: 'smooth-slider',
+                handleClass: 'smooth-handle',
+                tooltipClass: 'smooth-tooltip',
+                minValue: 0,
+                maxValue: 100,
+                segments: null,
+                initialValue: 66.66
+            },
+            {
+                sliderId: 'smoothSlider2',
+                sliderClass: 'smooth-slider',
+                handleClass: 'smooth-handle',
+                tooltipClass: 'smooth-tooltip',
+                minValue: 20,
+                maxValue: 60,
+                segments: null,
+                initialValue: null
+            },
+            {
+                sliderId: 'segmentedSlider1',
+                sliderClass: 'segmented-slider',
+                handleClass: 'segmented-handle',
+                tooltipClass: 'segmented-tooltip',
+                minValue: 0,
+                maxValue: 100,
+                segments: 5,
+                initialValue: null
+            },
+            {
+                sliderId: 'segmentedSlider2',
+                sliderClass: 'segmented-slider',
+                handleClass: 'segmented-handle',
+                tooltipClass: 'segmented-tooltip',
+                minValue: 0,
+                maxValue: 100,
+                segments: 4,
+                initialValue: 75
+            }
+        ]);
+    });
+
+    // Slider事件
+    function setupSlider(sliderData) {
+        sliderData.forEach(function(data) {
+            const slider = document.getElementById(data.sliderId);
+            const handle = slider.querySelector('.' + data.handleClass);
+            const tooltip = slider.querySelector('.' + data.tooltipClass);
+            const minValue = data.minValue;
+            const maxValue = data.maxValue;
+            const segments = data.segments;
+            const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
+            // 设置初始值并展示
+            const initialPosition = (initialValue - minValue) / (maxValue - minValue) * slider.offsetWidth;
+            handle.style.left = initialPosition + 'px';
+            tooltip.textContent = initialValue.toFixed(2);
+
+            if (slider.classList.contains('smooth-slider')) {
+                // 设置平滑的slider
+
+                let isDragging = false;
+
+                function updateValueSmoothSlider(posX) {
+                    const value = ((posX / slider.offsetWidth) * (maxValue - minValue)) + minValue;
+                    tooltip.textContent = value.toFixed(2);
+                    // document.getElementById('smoothValue').textContent = `Smooth Slider: ${value.toFixed(2)}`;
+                }
+
+                function handleDragSmoothSlider(e) {
+                    if (isDragging) {
+                        let posX = e.clientX - slider.getBoundingClientRect().left;
+                        if (posX < 0) {
+                            posX = 0;
+                        } else if (posX > slider.offsetWidth) {
+                            posX = slider.offsetWidth;
+                        }
+                        handle.style.left = posX + 'px';
+                        updateValueSmoothSlider(posX);
+                    }
+                }
+
+                handle.addEventListener('mousedown', function (e) {
+                    isDragging = true;
+                    handleDragSmoothSlider(e);
+                });
+
+                document.addEventListener('mousemove', handleDragSmoothSlider);
+
+                document.addEventListener('mouseup', function () {
+                    isDragging = false;
+                });
+
+                slider.addEventListener('click', function (e) {
+                    let posX = e.clientX - slider.getBoundingClientRect().left;
+                    if (posX < 0) {
+                        posX = 0;
+                    } else if (posX > slider.offsetWidth) {
+                        posX = slider.offsetWidth;
+                    }
+                    handle.style.left = posX + 'px';
+                    updateValueSmoothSlider(posX);
+                });
+
+                // 添加最小值和最大值提示
+                const minValueLabel = document.createElement('div');
+                minValueLabel.textContent = minValue.toFixed(2);
+                minValueLabel.style.position = 'absolute';
+                minValueLabel.style.bottom = '-20px';
+                slider.appendChild(minValueLabel);
+
+                const minValueLabelWidth = minValueLabel.offsetWidth;
+                minValueLabel.style.left = `calc(0% - ${minValueLabelWidth / 2}px)`;
+
+                const maxValueLabel = document.createElement('div');
+                maxValueLabel.textContent = maxValue.toFixed(2);
+                maxValueLabel.style.position = 'absolute';
+                maxValueLabel.style.bottom = '-20px';
+                slider.appendChild(maxValueLabel);
+
+                const maxValueLabelWidth = maxValueLabel.offsetWidth;
+                maxValueLabel.style.left = `calc(100% - ${maxValueLabelWidth / 2}px)`;
+            } else if (slider.classList.contains('segmented-slider')) {
+                // 设置分段的slider
+                const segmentWidth = 100 / segments;
+
+                let isDragging = false;
+
+                function updateValueSegmentSlider(posX) {
+                    const segmentIndex = Math.round(posX / (slider.offsetWidth / segments));
+                    const value = segmentIndex * segmentWidth + minValue;
+                    tooltip.textContent = value.toFixed(2).replace(/\.?0+$/, '');
+                    // document.getElementById('segmentedValue').textContent = `Segmented Slider: ${value.toFixed(2).replace(/\.?0+$/, '')}`;
+                }
+
+                function handleDragSegmentSlider(e) {
+                    if (isDragging) {
+                        let posX = e.clientX - slider.getBoundingClientRect().left;
+                        if (posX < 0) {
+                            posX = 0;
+                        } else if (posX > slider.offsetWidth) {
+                            posX = slider.offsetWidth;
+                        }
+                        handle.style.left = posX + 'px';
+                    }
+                }
+
+                handle.addEventListener('mousedown', function (e) {
+                    isDragging = true;
+                    handleDragSegmentSlider(e);
+                });
+
+                document.addEventListener('mousemove', handleDragSegmentSlider);
+
+                document.addEventListener('mouseup', function () {
+                    isDragging = false;
+                    const segmentIndex = Math.round(handle.offsetLeft / (slider.offsetWidth / segments));
+                    const segmentPosition = segmentIndex * (slider.offsetWidth / segments);
+                    handle.style.left = segmentPosition + 'px';
+                    updateValueSegmentSlider(segmentPosition);
+                });
+
+                slider.addEventListener('click', function (e) {
+                    let posX = e.clientX - slider.getBoundingClientRect().left;
+                    if (posX < 0) {
+                        posX = 0;
+                    } else if (posX > slider.offsetWidth) {
+                        posX = slider.offsetWidth;
+                    }
+                    const segmentIndex = Math.round(posX / (slider.offsetWidth / segments));
+                    const segmentPosition = segmentIndex * (slider.offsetWidth / segments);
+                    handle.style.left = segmentPosition + 'px';
+                    updateValueSegmentSlider(segmentPosition);
+                });
+
+                // 添加分段处提示数值
+                if (segments) {
+                    for (let i = 0; i < segments + 1; i++) {
+                        const segmentValueLabel = document.createElement('div');
+                        const segmentValue = minValue + i * (maxValue - minValue) / segments;
+                        segmentValueLabel.textContent = segmentValue.toFixed(2).replace(/\.?0+$/, '');
+                        segmentValueLabel.style.position = 'absolute';
+                        segmentValueLabel.style.bottom = '-20px';
+                        slider.appendChild(segmentValueLabel);
+
+                        // 获取标签宽度
+                        const labelWidth = segmentValueLabel.offsetWidth;
+
+                        segmentValueLabel.style.left = `calc(${(i / segments) * 100}% - ${labelWidth / 2}px)`;
+                    }
+                }
+
+                // 创建分段线
+                if (segments) {
+                    for (let i = 1; i < segments; i++) {
+                        const segment = document.createElement('div');
+                        segment.classList.add('slider-segment');
+                        segment.style.left = `calc(${segmentWidth * i}% - 1px)`;
+                        slider.appendChild(segment);
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
