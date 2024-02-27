@@ -137,8 +137,31 @@
             const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
             // 设置初始值并展示
             const initialPosition = (initialValue - minValue) / (maxValue - minValue) * slider.offsetWidth;
+            let isDragging;
+            
             handle.style.left = initialPosition + 'px';
             tooltip.textContent = initialValue.toFixed(2);
+
+            handle.addEventListener('touchstart', function (e) {
+                 isDragging = true;
+                handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+            });
+
+            document.addEventListener('touchmove', function (e) {
+                if (isDragging) {
+                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    e.preventDefault(); // 防止默认的滚动行为
+                }
+            });
+
+            document.addEventListener('touchend', function () {
+                isDragging = false;
+            });
+
+            slider.addEventListener('touchstart', function (e) {
+                handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                e.preventDefault(); // 防止默认的滚动行为
+            });
 
             if (slider.classList.contains('smooth-slider')) {
                 // 设置平滑的slider
