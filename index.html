@@ -137,31 +137,8 @@
             const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
             // 设置初始值并展示
             const initialPosition = (initialValue - minValue) / (maxValue - minValue) * slider.offsetWidth;
-            let isDragging;
-            
             handle.style.left = initialPosition + 'px';
             tooltip.textContent = initialValue.toFixed(2);
-
-            handle.addEventListener('touchstart', function (e) {
-                 isDragging = true;
-                handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
-            });
-
-            document.addEventListener('touchmove', function (e) {
-                if (isDragging) {
-                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
-                    e.preventDefault(); // 防止默认的滚动行为
-                }
-            });
-
-            document.addEventListener('touchend', function () {
-                isDragging = false;
-            });
-
-            slider.addEventListener('touchstart', function (e) {
-                handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
-                e.preventDefault(); // 防止默认的滚动行为
-            });
 
             if (slider.classList.contains('smooth-slider')) {
                 // 设置平滑的slider
@@ -198,6 +175,27 @@
                     isDragging = false;
                 });
 
+                handle.addEventListener('touchstart', function (e) {
+                    isDragging = true;
+                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                });
+
+                document.addEventListener('touchmove', function (e) {
+                    if (isDragging) {
+                        handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                        e.preventDefault(); // 防止默认的滚动行为
+                    }
+                });
+
+                document.addEventListener('touchend', function () {
+                    isDragging = false;
+                });
+
+                slider.addEventListener('touchstart', function (e) {
+                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    e.preventDefault(); // 防止默认的滚动行为
+                });
+
                 slider.addEventListener('click', function (e) {
                     let posX = e.clientX - slider.getBoundingClientRect().left;
                     if (posX < 0) {
@@ -227,7 +225,9 @@
 
                 const maxValueLabelWidth = maxValueLabel.offsetWidth;
                 maxValueLabel.style.left = `calc(100% - ${maxValueLabelWidth / 2}px)`;
+
             } else if (slider.classList.contains('segmented-slider')) {
+
                 // 设置分段的slider
                 const segmentWidth = 100 / segments;
 
@@ -265,6 +265,27 @@
                     const segmentPosition = segmentIndex * (slider.offsetWidth / segments);
                     handle.style.left = segmentPosition + 'px';
                     updateValueSegmentSlider(segmentPosition);
+                });
+
+                handle.addEventListener('touchstart', function (e) {
+                    isDragging = true;
+                    handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
+                });
+
+                document.addEventListener('touchmove', function (e) {
+                    if (isDragging) {
+                        handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
+                        e.preventDefault(); // 防止默认的滚动行为
+                    }
+                });
+
+                document.addEventListener('touchend', function () {
+                    isDragging = false;
+                });
+
+                slider.addEventListener('touchstart', function (e) {
+                    handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    e.preventDefault(); // 防止默认的滚动行为
                 });
 
                 slider.addEventListener('click', function (e) {
