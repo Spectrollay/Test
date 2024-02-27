@@ -281,6 +281,10 @@
 
                 document.addEventListener('touchend', function () {
                     isDragging = false;
+                    const segmentIndex = Math.round(handle.offsetLeft / (slider.offsetWidth / segments));
+                    const segmentPosition = segmentIndex * (slider.offsetWidth / segments);
+                    handle.style.left = segmentPosition + 'px';
+                    updateValueSegmentSlider(segmentPosition);
                 });
 
                 slider.addEventListener('touchstart', function (e) {
