@@ -222,7 +222,7 @@
                 const minValueLabel = document.createElement('div');
                 minValueLabel.textContent = minValue.toFixed(2);
                 minValueLabel.style.position = 'absolute';
-                minValueLabel.style.bottom = '-20px';
+                minValueLabel.style.bottom = '-25px';
                 slider.appendChild(minValueLabel);
 
                 const minValueLabelWidth = minValueLabel.offsetWidth;
@@ -231,7 +231,7 @@
                 const maxValueLabel = document.createElement('div');
                 maxValueLabel.textContent = maxValue.toFixed(2);
                 maxValueLabel.style.position = 'absolute';
-                maxValueLabel.style.bottom = '-20px';
+                maxValueLabel.style.bottom = '-25px';
                 slider.appendChild(maxValueLabel);
 
                 const maxValueLabelWidth = maxValueLabel.offsetWidth;
@@ -323,7 +323,7 @@
                         const segmentValue = minValue + i * (maxValue - minValue) / segments;
                         segmentValueLabel.textContent = segmentValue.toFixed(2).replace(/\.?0+$/, '');
                         segmentValueLabel.style.position = 'absolute';
-                        segmentValueLabel.style.bottom = '-20px';
+                        segmentValueLabel.style.bottom = '-25px';
                         slider.appendChild(segmentValueLabel);
 
                         // 获取标签宽度
@@ -355,7 +355,7 @@
                     resizing = true;
                     setTimeout(function () {
                         resizing = false;
-                    }, 0);
+                    }, 10);
                     handle.style.transition = 'none';
                     replaceHandle();
                     setTimeout(function () {
