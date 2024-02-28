@@ -35,7 +35,7 @@
             top: 50%; /* 滑块垂直居中 */
             z-index: 9;
             transform: translate(-50%, -50%); /* 水平和垂直居中 */
-            transition: left 100ms linear;
+            /*transition: left 100ms linear;*/
         }
 
         .slider-tooltip {
@@ -355,7 +355,7 @@
                     resizing = true;
                     setTimeout(function () {
                         resizing = false;
-                    }, 10);
+                    }, 0);
                     handle.style.transition = 'none';
                     replaceHandle();
                     setTimeout(function () {
