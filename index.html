@@ -2,18 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Custom Sliders</title>
     <style>
         /* 样式表 */
+        ::selection {
+            background-color: transparent;
+            color: inherit;
+        }
+
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            -webkit-user-select: none;
         }
 
         .slider {
             width: 80%; /* 进度条宽度 */
-            height: 20px; /* 进度条高度 */
+            height: 6px; /* 进度条高度 */
             background-color: #ddd; /* 进度条背景色 */
             margin: 20px auto; /* 上下外边距20px，左右自动居中 */
             position: relative; /* 相对定位，用于子元素绝对定位的参考 */
@@ -27,7 +33,9 @@
             cursor: pointer; /* 鼠标悬停时显示指针 */
             border-radius: 50%; /* 圆形滑块 */
             top: 50%; /* 滑块垂直居中 */
+            z-index: 9;
             transform: translate(-50%, -50%); /* 水平和垂直居中 */
+            transition: left 100ms linear;
         }
 
         .slider-tooltip {
@@ -49,21 +57,21 @@
 </head>
 <body>
 
-<h2>Smooth Slider1</h2>
+<div>Smooth Slider1</div>
 <div class="slider smooth-slider" id="smoothSlider1">
     <div class="slider-handle smooth-handle" id="smoothHandle"></div>
     <div class="slider-tooltip smooth-tooltip" id="smoothTooltip">0.00</div>
 </div>
 <br>
 <br>
-<h2>Smooth Slider2</h2>
+<div>Smooth Slider2</div>
 <div class="slider smooth-slider" id="smoothSlider2">
     <div class="slider-handle smooth-handle" id="smoothHandle2"></div>
     <div class="slider-tooltip smooth-tooltip" id="smoothTooltip2">0.00</div>
 </div>
 <br>
 <br>
-<h2>Segmented Slider1</h2>
+<div>Segmented Slider1</div>
 <div class="slider segmented-slider" id="segmentedSlider1">
     <div class="slider-handle segmented-handle" id="segmentedHandle"></div>
     <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip">0</div>
@@ -71,7 +79,7 @@
 </div>
 <br>
 <br>
-<h2>Segmented Slider2</h2>
+<div>Segmented Slider2</div>
 <div class="slider segmented-slider" id="segmentedSlider2">
     <div class="slider-handle segmented-handle" id="segmentedHandle2"></div>
     <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip2">0</div>
@@ -125,9 +133,10 @@
         ]);
     });
 
-    // Slider事件
+    // Slider滑动条事件
     function setupSlider(sliderData) {
-        sliderData.forEach(function(data) {
+
+        sliderData.forEach(function (data) {
             const slider = document.getElementById(data.sliderId);
             const handle = slider.querySelector('.' + data.handleClass);
             const tooltip = slider.querySelector('.' + data.tooltipClass);
@@ -135,19 +144,21 @@
             const maxValue = data.maxValue;
             const segments = data.segments;
             const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
+            let currentValue = initialValue;
+            let resizing = false;
             // 设置初始值并展示
             const initialPosition = (initialValue - minValue) / (maxValue - minValue) * slider.offsetWidth;
             handle.style.left = initialPosition + 'px';
-            tooltip.textContent = initialValue.toFixed(2);
 
             if (slider.classList.contains('smooth-slider')) {
                 // 设置平滑的slider
 
                 let isDragging = false;
+                tooltip.textContent = initialValue.toFixed(2);
 
                 function updateValueSmoothSlider(posX) {
-                    const value = ((posX / slider.offsetWidth) * (maxValue - minValue)) + minValue;
-                    tooltip.textContent = value.toFixed(2);
+                    currentValue = ((posX / slider.offsetWidth) * (maxValue - minValue)) + minValue;
+                    tooltip.textContent = currentValue.toFixed(2);
                     // document.getElementById('smoothValue').textContent = `Smooth Slider: ${value.toFixed(2)}`;
                 }
 
@@ -227,16 +238,16 @@
                 maxValueLabel.style.left = `calc(100% - ${maxValueLabelWidth / 2}px)`;
 
             } else if (slider.classList.contains('segmented-slider')) {
-
                 // 设置分段的slider
-                const segmentWidth = 100 / segments;
 
+                const segmentWidth = 100 / segments;
                 let isDragging = false;
+                tooltip.textContent = initialValue.toFixed(2).replace(/\.?0+$/, '');
 
                 function updateValueSegmentSlider(posX) {
                     const segmentIndex = Math.round(posX / (slider.offsetWidth / segments));
-                    const value = segmentIndex * segmentWidth + minValue;
-                    tooltip.textContent = value.toFixed(2).replace(/\.?0+$/, '');
+                    currentValue = segmentIndex * segmentWidth + minValue;
+                    tooltip.textContent = currentValue.toFixed(2).replace(/\.?0+$/, '');
                     // document.getElementById('segmentedValue').textContent = `Segmented Slider: ${value.toFixed(2).replace(/\.?0+$/, '')}`;
                 }
 
@@ -332,6 +343,26 @@
                     }
                 }
             }
+
+            function replaceHandle() {
+                const rect = slider.getBoundingClientRect();
+                const newPosition = (currentValue - minValue) / (maxValue - minValue) * rect.width;
+                handle.style.left = newPosition + 'px';
+            }
+
+            window.addEventListener('resize', function () {
+                if (!resizing) {
+                    resizing = true;
+                    setTimeout(function () {
+                        resizing = false;
+                    }, 0);
+                    handle.style.transition = 'none';
+                    replaceHandle();
+                    setTimeout(function () {
+                        handle.style.transition = 'left 100ms linear';
+                    }, 0);
+                }
+            });
         });
     }
 </script>
