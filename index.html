@@ -35,7 +35,7 @@
             top: 50%; /* 滑块垂直居中 */
             z-index: 9;
             transform: translate(-50%, -50%); /* 水平和垂直居中 */
-            /*transition: left 100ms linear;*/
+            transition: left 100ms linear;
         }
 
         .slider-tooltip {
@@ -188,6 +188,7 @@
 
                 handle.addEventListener('touchstart', function (e) {
                     isDragging = true;
+                    handle.style.transition = 'none';
                     handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
                 });
 
@@ -200,6 +201,7 @@
 
                 document.addEventListener('touchend', function () {
                     isDragging = false;
+                    handle.style.transition = 'left 100ms linear';
                 });
 
                 slider.addEventListener('touchstart', function (e) {
