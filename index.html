@@ -178,15 +178,6 @@
             handle.style.left = initialPosition + 'px';
             process.style.width = initialPosition + 'px';
 
-            function updateSlider(posX) {
-                if (posX < 0) {
-                    posX = 0;
-                } else if (posX > (slider.offsetWidth - 4)) {
-                    posX = (slider.offsetWidth - 4);
-                }
-                handle.style.left = posX + 'px';
-            }
-
             if (slider.classList.contains('smooth-slider')) {
                 // 设置平滑的slider
 
@@ -200,10 +191,8 @@
                 }
 
                 function updateSmoothSlider(e) {
-                    let posX = e.clientX - slider.getBoundingClientRect().left;
-                    updateSlider(posX)
-                    updateProcessBar(posX);
-                    updateValueSmoothSlider(posX);
+                    updateProcessBar(updateSlider(e));
+                    updateValueSmoothSlider(updateSlider(e));
                 }
 
                 function handleDragSmoothSlider(e) {
@@ -212,11 +201,10 @@
                     }
                 }
 
-                handle.addEventListener('mousedown', function (e) {
+                handle.addEventListener('mousedown', function () {
                     isDragging = true;
                     process.style.transition = 'none';
                     handle.style.transition = 'none';
-                    handleDragSmoothSlider(e);
                 });
 
                 document.addEventListener('mousemove', handleDragSmoothSlider);
@@ -227,11 +215,10 @@
                     handle.style.transition = 'left 100ms linear';
                 });
 
-                handle.addEventListener('touchstart', function (e) {
+                handle.addEventListener('touchstart', function () {
                     isDragging = true;
                     process.style.transition = 'none';
                     handle.style.transition = 'none';
-                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
                 });
 
                 document.addEventListener('touchmove', function (e) {
@@ -247,7 +234,7 @@
                 });
 
                 slider.addEventListener('touchstart', function (e) {
-                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    // handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
                     e.preventDefault(); // 防止默认的滚动行为
                 });
 
@@ -291,7 +278,7 @@
 
                 function updateSegmentSlider(e) {
                     let posX = e.clientX - slider.getBoundingClientRect().left;
-                    updateSlider(posX)
+                    updateSlider(e);
                     updateProcessBar(posX);
                 }
 
@@ -309,9 +296,8 @@
                     updateValueSegmentSlider(segmentPosition);
                 }
 
-                handle.addEventListener('mousedown', function (e) {
+                handle.addEventListener('mousedown', function () {
                     isDragging = true;
-                    handleDragSegmentSlider(e);
                 });
 
                 document.addEventListener('mousemove', handleDragSegmentSlider);
@@ -320,9 +306,8 @@
                     moveEnd();
                 });
 
-                handle.addEventListener('touchstart', function (e) {
+                handle.addEventListener('touchstart', function () {
                     isDragging = true;
-                    handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
                 });
 
                 document.addEventListener('touchmove', function (e) {
@@ -337,7 +322,7 @@
                 });
 
                 slider.addEventListener('touchstart', function (e) {
-                    handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    // handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
                     e.preventDefault();
                 });
 
@@ -379,6 +364,17 @@
                         slider.appendChild(segment);
                     }
                 }
+            }
+
+            function updateSlider(e) {
+                let posX = e.clientX - slider.getBoundingClientRect().left;
+                if (posX < 0) {
+                    posX = 0;
+                } else if (posX > (slider.offsetWidth - 4)) {
+                    posX = (slider.offsetWidth - 4);
+                }
+                handle.style.left = posX + 'px';
+                return posX;
             }
 
             function replaceHandle() {
