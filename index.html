@@ -201,8 +201,9 @@
                     }
                 }
 
-                handle.addEventListener('mousedown', function () {
+                handle.addEventListener('mousedown', function (e) {
                     isDragging = true;
+                    handleDragSmoothSlider(e);
                 });
 
                 document.addEventListener('mousemove', handleDragSmoothSlider);
@@ -211,8 +212,9 @@
                     isDragging = false;
                 });
 
-                handle.addEventListener('touchstart', function () {
+                handle.addEventListener('touchstart', function (e) {
                     isDragging = true;
+                    handleDragSmoothSlider(e.touches[0]);
                 });
 
                 document.addEventListener('touchmove', function (e) {
@@ -226,7 +228,7 @@
                 });
 
                 slider.addEventListener('touchstart', function (e) {
-                    // handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
                     e.preventDefault(); // 防止默认的滚动行为
                 });
 
