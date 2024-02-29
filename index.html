@@ -203,22 +203,16 @@
 
                 handle.addEventListener('mousedown', function () {
                     isDragging = true;
-                    process.style.transition = 'none';
-                    handle.style.transition = 'none';
                 });
 
                 document.addEventListener('mousemove', handleDragSmoothSlider);
 
                 document.addEventListener('mouseup', function () {
                     isDragging = false;
-                    process.style.transition = 'width 100ms linear';
-                    handle.style.transition = 'left 100ms linear';
                 });
 
                 handle.addEventListener('touchstart', function () {
                     isDragging = true;
-                    process.style.transition = 'none';
-                    handle.style.transition = 'none';
                 });
 
                 document.addEventListener('touchmove', function (e) {
@@ -229,8 +223,6 @@
 
                 document.addEventListener('touchend', function () {
                     isDragging = false;
-                    process.style.transition = 'width 100ms linear';
-                    handle.style.transition = 'left 100ms linear';
                 });
 
                 slider.addEventListener('touchstart', function (e) {
