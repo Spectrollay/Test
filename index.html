@@ -172,6 +172,7 @@
             const segments = data.segments;
             const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
             let currentValue = initialValue;
+            let resizing = false;
             // 设置初始值并展示
             const initialPosition = (initialValue - minValue) / (maxValue - minValue) * (slider.offsetWidth - 4);
             handle.style.left = initialPosition + 'px';
