@@ -172,7 +172,6 @@
             const segments = data.segments;
             const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
             let currentValue = initialValue;
-            let resizing = false;
             // 设置初始值并展示
             const initialPosition = (initialValue - minValue) / (maxValue - minValue) * (slider.offsetWidth - 4);
             handle.style.left = initialPosition + 'px';
@@ -185,9 +184,10 @@
                 tooltip.textContent = initialValue.toFixed(2);
 
                 function updateValueSmoothSlider(posX) {
-                    currentValue = ((posX / (slider.offsetWidth - 4)) * (maxValue - minValue)) + minValue;
-                    tooltip.textContent = currentValue.toFixed(2);
-                    // document.getElementById('smoothValue').textContent = `Smooth Slider: ${value.toFixed(2)}`;
+                        const smoothIndex = ((posX) / (slider.offsetWidth - 4));
+                        currentValue = smoothIndex * (maxValue - minValue) + minValue;
+                        tooltip.textContent = currentValue.toFixed(2);
+                        // document.getElementById('smoothValue').textContent = `Smooth Slider: ${value.toFixed(2)}`;
                 }
 
                 function updateSmoothSlider(e) {
@@ -201,9 +201,8 @@
                     }
                 }
 
-                handle.addEventListener('mousedown', function (e) {
+                handle.addEventListener('mousedown', function () {
                     isDragging = true;
-                    handleDragSmoothSlider(e);
                 });
 
                 document.addEventListener('mousemove', handleDragSmoothSlider);
@@ -212,14 +211,14 @@
                     isDragging = false;
                 });
 
-                handle.addEventListener('touchstart', function (e) {
+                handle.addEventListener('touchstart', function () {
                     isDragging = true;
-                    handleDragSmoothSlider(e.touches[0]);
                 });
 
                 document.addEventListener('touchmove', function (e) {
                     if (isDragging) {
                         handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                        e.preventDefault();
                     }
                 });
 
@@ -228,12 +227,13 @@
                 });
 
                 slider.addEventListener('touchstart', function (e) {
-                    handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
+                    // handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
                     e.preventDefault(); // 防止默认的滚动行为
                 });
 
                 slider.addEventListener('click', function (e) {
-                    updateSmoothSlider(e);
+                    let posX = e.clientX - slider.getBoundingClientRect().left;
+                    handle.style.left = posX + 'px'
                 });
 
                 // 添加最小值和最大值提示
