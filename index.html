@@ -1,406 +1,704 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
+
 <head>
     <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Custom Sliders</title>
-    <style>
-        /* 样式表 */
-        ::selection {
-            background-color: transparent;
-            color: inherit;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            -webkit-user-select: none;
-        }
-
-        .slider {
-            width: 90%; /* 进度条宽度 */
-            height: 8px; /* 进度条高度 */
-            border: 2px solid #1E1E1F;
-            background: #8C8D90;
-            box-shadow: inset 2px 2px rgba(255, 255, 255, 0.4), inset -2px -2px rgba(255, 255, 255, 0.2);
-            margin: 30px auto; /* 上下外边距30px,左右自动居中 */
-            position: relative; /* 相对定位,用于子元素绝对定位的参考 */
-        }
-
-        .slider-process {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            max-width: 100%;
-            background: #3C8527;
-            box-shadow: inset 2px 2px rgba(255, 255, 255, 0.4), inset -2px -2px rgba(255, 255, 255, 0.2);
-            transition: width 100ms linear;
-        }
-
-        .slider-handle {
-            position: absolute; /* 相对于包含它的 .slider 元素绝对定位 */
-            width: 28px;
-            height: 28px;
-            top: 50%; /* 滑块垂直居中 */
-            z-index: 1;
-            transform: translate(-50%, -50%); /* 水平和垂直居中 */
-            background-color: #D0D1D4;
-            border: 2px solid #1E1E1F;
-            box-shadow: inset 0 -4px #58585A, inset 2px 2px rgba(255, 255, 255, 0.6), inset -2px -6px rgba(255, 255, 255, 0.4);
-            transition: left 100ms linear;
-        }
-
-        .slider-handle:hover, .slider-handle:active {
-            background-color: #B1B2B5;
-            box-shadow: inset 0 -4px #58585A, inset 2px 2px rgba(255, 255, 255, 0.8), inset -2px -6px rgba(255, 255, 255, 0.6);
-        }
-
-        .slider-tooltip {
-            position: absolute;
-            bottom: -55px;
-            left: 50%; /* 水平居中 */
-            transform: translateX(-50%); /* 水平居中 */
-        }
-
-        .slider-segment {
-            position: absolute;
-            background-color: #1E1E1F;
-            width: 2px;
-            height: 8px;
-            top: 50%; /* 分段线垂直居中 */
-            transform: translateY(-50%); /* 分段线垂直居中 */
-        }
-    </style>
+    <meta content="Minecraft, MC, 我的世界, 版本库, Minecraft Bedrock Edition, 基岩版, Minecraft Education Edition, 教育版, Minecraft Trial, 试玩版, Minecraft Demo, 演示版, Minecraft Legends, 传奇, Minecraft Dungeons, 地下城, Minecraft Story Mode, 故事模式, Minecraft Earth, 地球" name="keywords"/>
+    <meta content="星月Minecraft版本库是一个开放共享的资源站,专注于收录Minecraft发布过的所有版本." name="description"/>
+    <link href="../stylesheet/loading_mask.css" rel="stylesheet">
+    <!--    <style>-->
+    <!--        -->
+    <!--    </style>-->
+    <script>
+        const root_path = '/' + (window.location.pathname.split('/').filter(Boolean).length > 0 ? window.location.pathname.split('/').filter(Boolean)[0] + '/' : '');
+    </script>
+    <link href="Feed/main.xml" rel="alternate" title="星月Minecraft版本库主要订阅" type="application/rss+xml">
+    <link href="Feed/messages.xml" rel="alternate" title="星月Minecraft版本库通知订阅" type="application/rss+xml">
+    <link href="Feed/update.xml" rel="alternate" title="星月Minecraft版本库更新订阅" type="application/rss+xml">
+    <link href="Feed/database.xml" rel="alternate" title="星月Minecraft版本库数据库订阅" type="application/rss+xml">
+    <link href="./images/Logo.jpg" rel="icon">
+    <title>星月Minecraft版本库</title>
 </head>
-<body>
 
-<div>Smooth Slider1</div>
-<div class="slider_content">
-    <div class="slider smooth-slider" id="smoothSlider1">
-        <div class="slider-process"></div>
-        <div class="slider-handle smooth-handle" id="smoothHandle"></div>
-        <div class="slider-tooltip smooth-tooltip" id="smoothTooltip">0.00</div>
+<body>
+<div class="loading_mask" id="loading_mask">
+    <div>
+        <div class="spinner"><img alt="" id="spinner_img" src="images/Loading_white.gif"/></div>
+        <div class="spinner">
+            <div class="spinner"><span class="spinner_text">载入中</span></div>
+        </div>
     </div>
 </div>
-<br>
-<br>
-<div>Smooth Slider2</div>
-<div class="slider_content">
-    <div class="slider smooth-slider" id="smoothSlider2">
-        <div class="slider-process"></div>
-        <div class="slider-handle smooth-handle" id="smoothHandle2"></div>
-        <div class="slider-tooltip smooth-tooltip" id="smoothTooltip2">0.00</div>
+<header>
+    <div class="header_item header_item_left" id="menu" onclick="clickedMenu();">
+        <img alt="" class="menu_icon" id="menu_icon" src=""/>
     </div>
-</div>
-<br>
-<br>
-<div>Segmented Slider1</div>
-<div class="slider_content">
-    <div class="slider segmented-slider" id="segmentedSlider1">
-        <div class="slider-process"></div>
-        <div class="slider-handle segmented-handle" id="segmentedHandle"></div>
-        <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip">0</div>
-        <div class="slider-segment" style="display: none"></div>
+    <div class="header_logo" onclick="scrollToTop();">
+        <img alt="Title Icon" class="title_icon" src="./images/Logo.jpg"/>
+        <span class="header_title">Repository</span>
     </div>
-</div>
-<br>
-<br>
-<div>Segmented Slider2</div>
-<div class="slider_content">
-    <div class="slider segmented-slider" id="segmentedSlider2">
-        <div class="slider-process"></div>
-        <div class="slider-handle segmented-handle" id="segmentedHandle2"></div>
-        <div class="slider-tooltip segmented-tooltip" id="segmentedTooltip2">0</div>
-        <div class="slider-segment" style="display: none"></div>
+    <div class="header_item header_item_right" id="settings" onclick="playSound(this);settingsPage();">
+        <img alt="" class="settings_icon" src="./images/Settings.png"/>
     </div>
+</header>
+<scroll-container>
+    <main class="main_scroll_container" id="main">
+        <div id="main_top"></div>
+        <div class="banner_area" id="holiday_tip1">
+            <div class="banner important_banner" style="margin-bottom: 0"></div>
+        </div>
+        <div class="banner_area" id="holiday_tip2">
+            <div class="banner important_banner" style="margin-bottom: 0"></div>
+        </div>
+        <div class="banner_area">
+            <div class="banner neutral_banner" id="tip"></div>
+        </div>
+        <div class="main preview_block">
+            <div class="preview_title" id="preview_title"></div>
+            <div class="preview_detail" id="preview_detail1"></div>
+            <div class="preview_detail" id="preview_detail2"></div>
+            <div class="btn_group">
+                <custom-button data="default|green|large|preview_btn2|false||" js="toRepo();" text=""></custom-button>
+            </div>
+        </div>
+        <div class="block_spacing"></div>
+        <div class="block" id="header_notice">
+            <div class="main main-header">
+                <div class="header_notice_title" id="repository_logo"></div>
+            </div>
+            <div class="main header_notice_body">
+                <div class="description2">
+                    <p>
+                        星月Minecraft版本库是一个开放共享的资源站, 专注于收录<a href="https://www.minecraft.net/" onclick="playSound1();" target="_blank">Minecraft</a>发布过的所有版本.
+                    </p>
+                </div>
+            </div>
+            <div class="main header_notice_body">
+                <div class="description2">
+                    <table class="notice_table">
+                        <tr>
+                            <th colspan="2">
+                                <div class="title3">消息</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="left_table">
+                                <div class="description2">[2024-06-03]</div>
+                            </td>
+                            <td class="right_table">
+                                <div class="description2">
+                                    <a href="javascript:void(0);" onclick="jumpToPage('./notifications/#feedback_rewards');">版本库反馈有奖活动上线!</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="left_table">
+                                <div class="description2">[2024-05-17]</div>
+                            </td>
+                            <td class="right_table">
+                                <div class="description2">
+                                    <a href="javascript:void(0);" onclick="jumpToPage('./notifications/#mc_15_y');">Minecraft 15 周年庆典!</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="left_table">
+                                <div class="description2">[2024-02-09]</div>
+                            </td>
+                            <td class="right_table">
+                                <div class="description2">
+                                    <a href="javascript:void(0);" onclick="jumpToPage('./notifications/#repo_v4_r');">版本库V4正式发布!</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="btn_group">
+                        <custom-button data="default|normal|small||false||" js="toMessage();" text="消息中心"></custom-button>
+                        <custom-button data="default|normal|small||false||" js="toUpdatelog();" text="开发日志"></custom-button>
+                    </div>
+                </div>
+            </div>
+            <div class="main header_notice_body">
+                <div class="description2">
+                    <p>请积极支持Minecraft正版!</p>
+                    <p>你可以通过以下方式购买正版:<br>
+                        <a href="https://play.google.com/store/apps/details?id=com.mojang.minecraftpe" onclick="playSound1();" target="_blank">Google Play</a> /
+                        <a href="https://apps.apple.com/app/minecraft/id479516143" onclick="playSound1();" target="_blank">App Store</a> /
+                        <a href="https://www.minecraft.net/zh-hans/store/minecraft-deluxe-collection-pc" onclick="playSound1();" target="_blank">PC 捆绑包</a></p>
+                    <p>不知道如何购买正版?<br>
+                        <a href="javascript:void(0);" onclick="jumpToPage(`${root_path}guidance/how_to_buy.html`);">正版购买指南</a>
+                    </p>
+                </div>
+            </div>
+            <div class="main header_notice_body">
+                <div class="title3">使用说明</div>
+                <div class="description2">
+                    <p>仓库资源说明:</p>
+                    <p>本版本库的资源可分为两大部分, 站内资源和站外资源. 站内资源通常由开发者维护, 提供多渠道下载, 可以保证资源品质; 站外资源通常由第三方维护, 不能保证其资源品质, 请自行甄别(站外资源通常带有链接图标或跳转确认弹窗). 在使用过程中如果发现资源存在问题请及时与我们取得联系, 有想要添加的资源也可以向我们提出.</p>
+                    <p>文件命名规则: </p>
+                    <p>软件名 版本名 种类 架构 类型.apk/.apks<br>
+                        其中种类包括去音乐版(lite), 路径修改版(fix), 官方原版和去验证版; 架构包括universal(armv7, armv8, x86, x86_64), armv7(armeabi-v7a, 32位), armv8(arm64-v8a, 64位), x86(32位)和x86_64(64位); 类型包括release, beta和preview.</p>
+                    <p>关于网盘: </p>
+                    <div class="table_area">
+                        <div class="table-big">
+                            <table>
+                                <tr>
+                                    <th colspan="7">标准版本分布情况</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>原版<sup>[2]</sup></td>
+                                    <td>中文译名修正<sup>[3]</sup></td>
+                                    <td>去验证版</td>
+                                    <td>去音乐版<sup>[4]</sup></td>
+                                    <td>多架构版<sup>[3]</sup></td>
+                                    <td>路径修改版<sup>[4]</sup></td>
+                                </tr>
+                                <tr>
+                                    <td>默认网盘<sup>[1]</sup></td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有<sup>[6]</sup></td>
+                                    <td>无</td>
+                                </tr>
+                                <tr>
+                                    <td>蓝奏云盘</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>部分<sup>[5]</sup></td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                </tr>
+                                <tr>
+                                    <td>123 云盘</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>无</td>
+                                </tr>
+                                <tr>
+                                    <td>天翼云盘</td>
+                                    <td>无</td>
+                                    <td>有</td>
+                                    <td>部分<sup>[2]</sup></td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                </tr>
+                                <tr>
+                                    <td>百度云盘</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有<sup>[6]</sup></td>
+                                    <td>无</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="info_text">标准版本目前仅支持Android平台</p>
+                    <div class="info_area">
+                        <div>
+                            <p>
+                                [1]本站使用的默认网盘服务位于大陆境外,连接可能会有较大波动<br>
+                                [2]仅支持1.16及以上版本<br>
+                                [3]仅支持1.20及以上正式版,默认去验证<br>
+                                [4]仅支持1.20及以上开发版,默认去验证<br>
+                                [5]仅支持1.14及以下版本<br>
+                                [6]还包括原版安装包
+                            </p>
+                        </div>
+                    </div>
+                    <div class="table_area">
+                        <div class="table-big">
+                            <table>
+                                <tr>
+                                    <th colspan="8">其他版本分布情况</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>教育版<sup>[1]</sup></td>
+                                    <td>试玩版<sup>[1]</sup></td>
+                                    <td>演示版<sup>[1]</sup></td>
+                                    <td>地下城</td>
+                                    <td>传奇</td>
+                                    <td>故事模式<sup>[2]</sup></td>
+                                    <td>地球<sup>[1]</sup></td>
+                                </tr>
+                                <tr>
+                                    <td>默认网盘</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                </tr>
+                                <tr>
+                                    <td>蓝奏云盘</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>有</td>
+                                </tr>
+                                <tr>
+                                    <td>123 云盘</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                </tr>
+                                <tr>
+                                    <td>天翼云盘</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                </tr>
+                                <tr>
+                                    <td>百度云盘</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                    <td>无</td>
+                                    <td>无</td>
+                                    <td>有</td>
+                                    <td>有</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="info_text">其他版本支持平台以标注为准</p>
+                    <div class="info_area">
+                        <div>
+                            <p style="margin-bottom: 0">
+                                [1]仅支持Android平台<br>
+                                [2]支持Android/iOS/Windows平台
+                            </p>
+                        </div>
+                    </div>
+                    <p>关于架构: </p>
+                    <div class="table_area">
+                        <div class="table">
+                            <table>
+                                <tr>
+                                    <td>架构</td>
+                                    <td>适用情况<sup>[1]</sup></td>
+                                </tr>
+                                <tr>
+                                    <td>armv7</td>
+                                    <td>几乎所有手机,平板设备</td>
+                                </tr>
+                                <tr>
+                                    <td>armv8</td>
+                                    <td>大部分手机,平板设备</td>
+                                </tr>
+                                <tr>
+                                    <td>x86</td>
+                                    <td>模拟器,极少数平板</td>
+                                </tr>
+                                <tr>
+                                    <td>x86_64</td>
+                                    <td>64位模拟器</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <p>
+                        [1]以上内容根据近年设备架构规律总结, 仅供参考, 可能有部分不符. 你可以使用
+                        <a href="https://play.google.com/store/apps/details?id=flar2.devcheck" onclick="playSound1();" target="_blank">
+                            <img alt="link" class="link_img" src=""/>DevCheck
+                        </a> 查询你的设备架构以选择合适的版本.
+                    </p>
+                    <p>关于Apks: </p>
+                    <p>本版本库部分安装包使用了
+                        <a href="https://developer.android.com/guide/app-bundle/" onclick="playSound1();" target="_blank">
+                            <img alt="link" class="link_img" src=""/>Android App Bundle技术
+                        </a>.
+                        使用此技术的安装包后缀名为apks而不是apk. 你可以使用
+                        <a href="https://mt2.cn/" onclick="playSound1();" target="_blank">
+                            <img alt="link" class="link_img" src=""/>MT管理器
+                        </a> 或
+                        <a href="https://github.com/Aefyr/SAI" onclick="playSound1();" target="_blank">
+                            <img alt="link" class="link_img" src=""/>Split APKs Installer(SAI)
+                        </a> 来安装.</p>
+                </div>
+            </div>
+        </div>
+        <div class="block_spacing"></div>
+        <div class="block">
+            <div class="main choose_edition_title">选择版本</div>
+            <div class="main edition_block" id="bedrock_edition" onclick="jumpToPage(`${root_path}home/bedrock_edition.html`);">
+                <div>
+                    <div class="title1">Bedrock Edition</div>
+                    <div class="description1">基岩版</div>
+                </div>
+            </div>
+            <div class="main edition_block" id="pocket_edition" onclick="jumpToPage(`${root_path}home/pocket_edition.html`);">
+                <div>
+                    <div class="title1">Pocket Edition</div>
+                    <div class="description1">携带版</div>
+                </div>
+            </div>
+            <div class="main edition_block" id="education_edition" onclick="jumpToPage(`${root_path}home/education_edition.html`);">
+                <div>
+                    <div class="title1">Education Edition</div>
+                    <div class="description1">教育版</div>
+                </div>
+            </div>
+            <div class="main edition_block" id="trial" onclick="jumpToPage(`${root_path}home/trial.html`);">
+                <div>
+                    <div class="title1">Minecraft Trial</div>
+                    <div class="description1">试玩版</div>
+                </div>
+            </div>
+            <div class="main edition_block" id="demo" onclick="jumpToPage(`${root_path}home/demo.html`);">
+                <div>
+                    <div class="title1">Minecraft Demo</div>
+                    <div class="description1">演示版</div>
+                </div>
+            </div>
+            <div class="main edition_block" id="more_edition" onclick="jumpToPage(`${root_path}home/more_edition.html`);">
+                <div>
+                    <div class="title1">更多版本</div>
+                    <div class="description1">这里可能会有你想要的</div>
+                </div>
+            </div>
+        </div>
+        <div class="block_spacing"></div>
+        <div class="block" id="footer_notice">
+            <div class="main main-footer">
+                <div class="footer_notice_title">版本库须知</div>
+            </div>
+            <div class="main footer_notice_body">
+                <div class="title3">使用条款与免责声明</div>
+                <div class="description2">
+                    <p>星月Minecraft版本库 (以下称作"本站") 收集的安装包仅供正版玩家学习 / 研究或欣赏, 不得传播 / 出售或用于其他任何商业或非商业用途.</p>
+                    <p>你需要对使用本站的行为负责, 在本站下载的安装包所造成的一切后果请自行承担. 请你在24小时内将下载的安装包删除.</p>
+                    <p>本站中的部分链接指向第三方运营的外部网站, 我们不能保证其稳定性和安全性. 在访问这些外部网站时, 你也需要遵循相关的使用条款.</p>
+                    <p>使用本站即代表你同意此使用条款及免责申明. 下载本站提供的安装包即代表你同意<a href="https://www.minecraft.net/terms" onclick="playSound1();" target="_blank">Minecraft使用准则</a>.</p>
+                    <p>本站与Mojang Studio / Microsoft / NetEase不存在从属关系.</p>
+                </div>
+            </div>
+            <div class="main footer_notice_body">
+                <div class="title3">关于我们</div>
+                <div class="description2">
+                    <p>版本库开发: @Spectrollay</p>
+                    <p>版本库维护: @Spectrollay</p>
+                    <p>默认网盘提供: @huang1111</p>
+                    <p>项目群组:
+                        <a href="https://t.me/Spectrollay_MCW" onclick="playSound1();" target="_blank">Telegram</a> /
+                        <a href="https://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=WVA6aPqtv99hiYleW7vUq5OsBIufCAB1&authKey=B0%2BaXMCTqnmQrGh0wzCZTyWTIPyHS%2FPEM5QXcFfVwroFowNnzs6Yg1er1%2F8Fekqp&noverify=0&group_code=833473609" onclick="playSound1();" target="_blank">QQ</a> /
+                        <a href="https://yhfx.jwznb.com/share?key=VyTE7W7sLwRl&ts=1684642802" onclick="playSound1();" target="_blank">云湖</a></p>
+                    <p>官方频道:
+                        <a href="https://t.me/spectrollay_minecraft_repository" onclick="playSound1();" target="_blank">Telegram</a> /
+                        <a href="https://pd.qq.com/s/h8a7gt2u4" onclick="playSound1();" target="_blank">QQ</a></p>
+                </div>
+            </div>
+            <div class="main footer_notice_body">
+                <div class="title3">捐赠支持</div>
+                <div class="description2">
+                    <div id="donate_message"></div>
+                    <div class="btn_group">
+                        <custom-button data="default|normal|large||false||" js="jumpToPage(`${root_path}donate.html`);" text="打赏"></custom-button>
+                    </div>
+                </div>
+            </div>
+            <div class="main footer_notice_body">
+                <div class="title3">特别鸣谢</div>
+                <div class="description2">
+                    <div>
+                        <img alt="Coming Soon Image" class="coming_soon-img" src="./images/Building.png"/>
+                        <div>即将到来</div>
+                    </div>
+                </div>
+            </div>
+            <div class="main footer_notice_body">
+                <div class="title3">友情链接</div>
+                <div class="description2">
+                    <div>
+                        <img alt="Coming Soon Image" class="coming_soon-img" src="./images/Building.png"/>
+                        <div>即将到来</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="page_info"></div>
+    </main>
+</scroll-container>
+<custom-scrollbar>
+    <custom-scrollbar-track></custom-scrollbar-track>
+    <custom-scrollbar-thumb></custom-scrollbar-thumb>
+</custom-scrollbar>
+
+<!--侧边栏-->
+<div class="sidebar" id="sidebar">
+    <scroll-container id="sidebar_scroll_container">
+        <div class="sidebar_area main_scroll_container">
+            <div class="sidebar_content">
+                <div class="sidebar_list">
+                    <a class="sidebar_item" href="#header_notice">版本库信息</a>
+                    <a class="sidebar_item" href="#bedrock_edition">基岩版</a>
+                    <a class="sidebar_item" href="#pocket_edition">携带版</a>
+                    <a class="sidebar_item" href="#education_edition">教育版</a>
+                    <a class="sidebar_item" href="#trial">试玩版</a>
+                    <a class="sidebar_item" href="#demo">演示版</a>
+                    <a class="sidebar_item" href="#more_edition">更多版本</a>
+                    <a class="sidebar_item" href="#footer_notice">版本库须知</a>
+                </div>
+                <div class="sidebar_info">
+                    <div class="sidebar_detail_title" id="sidebar_bottom_title"></div>
+                    <div class="sidebar_detail" id="sidebar_bottom_detail1"></div>
+                    <div class="sidebar_detail">
+                        <custom-button data="sidebar|normal||sidebar_bottom_btn|false||" js="clickedSidebarBottomBtn();" text=""></custom-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </scroll-container>
+    <custom-scrollbar>
+        <custom-scrollbar-track></custom-scrollbar-track>
+        <custom-scrollbar-thumb></custom-scrollbar-thumb>
+    </custom-scrollbar>
 </div>
+
+<!--遮罩-->
+<!--除了顶栏-->
+<div class="overlay_main" id="overlay_main" onclick="clickedOverlay();"></div>
+
+<!--提示弹窗-->
+<!--<div class="overlay" id="overlay_alert_modal" tabindex="-1"></div>-->
+<!--<modal_area id="alert_modal" tabindex="-1">-->
+<!--    <modal>-->
+<!--        <modal_title_area>-->
+<!--            <modal_title>提示</modal_title>-->
+<!--            <modal_close_btn class="close_btn" onclick="hideModal(this);" tabindex="0">-->
+<!--                <img alt="" class="modal_close_btn_img" src=""/>-->
+<!--            </modal_close_btn>-->
+<!--        </modal_title_area>-->
+<!--        <modal_content>-->
+<!--            <p>提示文本</p>-->
+<!--        </modal_content>-->
+<!--        <modal_button_area>-->
+<!--            <modal_button_group>-->
+<!--                <modal_button_list>-->
+<!--                    <custom-button data="modal|red|||false||" js="hideAlertModal(this);" text="我不知道"></custom-button>-->
+<!--                    <custom-button data="modal|green|||false||" js="hideAlertModal(this);" text="我知道了"></custom-button>-->
+<!--                </modal_button_list>-->
+<!--            </modal_button_group>-->
+<!--        </modal_button_area>-->
+<!--    </modal>-->
+<!--</modal_area>-->
+
+<!--提示弹窗-->
+<div class="overlay" id="overlay_alert_modal" tabindex="-1"></div>
+<modal_area id="alert_modal" tabindex="-1"></modal_area>
+
+<!--音效-->
+<!--<audio id="click" preload="auto">-->
+<!--    <source src="./sounds/click.ogg" type="audio/ogg">-->
+<!--</audio>-->
+<!--<audio id="button" preload="auto">-->
+<!--    <source src="./sounds/button.ogg" type="audio/ogg">-->
+<!--</audio>-->
+
+</body>
 
 <script>
-    // 在页面加载时初始化Slider
-    window.addEventListener('DOMContentLoaded', function () {
-        setupSlider([
-            {
-                sliderId: 'smoothSlider1',
-                handleClass: 'smooth-handle',
-                tooltipClass: 'smooth-tooltip',
-                minValue: 0,
-                maxValue: 100,
-                segments: null,
-                initialValue: 66.66
-            },
-            {
-                sliderId: 'smoothSlider2',
-                handleClass: 'smooth-handle',
-                tooltipClass: 'smooth-tooltip',
-                minValue: 20,
-                maxValue: 60,
-                segments: null,
-                initialValue: null
-            },
-            {
-                sliderId: 'segmentedSlider1',
-                handleClass: 'segmented-handle',
-                tooltipClass: 'segmented-tooltip',
-                minValue: 0,
-                maxValue: 100,
-                segments: 5,
-                initialValue: null
-            },
-            {
-                sliderId: 'segmentedSlider2',
-                handleClass: 'segmented-handle',
-                tooltipClass: 'segmented-tooltip',
-                minValue: 0,
-                maxValue: 100,
-                segments: 4,
-                initialValue: 75
-            }
-        ]);
+    const custom_elements_js = document.createElement('script');
+    const public_script = document.createElement('script');
+    const public_define = document.createElement('script');
+
+    custom_elements_js.src = root_path + 'javascript/custom_elements.js';
+    public_script.src = root_path + 'javascript/public_script.js';
+    public_define.src = root_path + 'javascript/public_define.js';
+
+    document.head.appendChild(custom_elements_js);
+    document.head.appendChild(public_script);
+    document.head.appendChild(public_define);
+
+    const menu_icon = document.getElementById('menu_icon');
+    const back_icon = document.getElementById('back_icon');
+
+    if (back_icon) {
+        back_icon.src = root_path + 'images/arrowLeft.png';
+    }
+    if (menu_icon) {
+        menu_icon.src = root_path + 'images/menu.png';
+    }
+
+    const loading_mask = document.getElementById('loading_mask');
+
+    // 监听页面加载完成事件
+    window.addEventListener('load', function () {
+        // 延时600ms后隐藏蒙版
+        loading_mask.style.opacity = '0';
+        setTimeout(function () {
+            loading_mask.style.display = 'none';
+        }, 600);
     });
 
-    // Slider滑动条事件
-    function setupSlider(sliderData) {
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
 
-        sliderData.forEach(function (data) {
-            const slider = document.getElementById(data.sliderId);
-            const process = slider.querySelector('.slider-process');
-            const handle = slider.querySelector('.' + data.handleClass);
-            const tooltip = slider.querySelector('.' + data.tooltipClass);
-            const minValue = data.minValue;
-            const maxValue = data.maxValue;
-            const segments = data.segments;
-            const initialValue = data.initialValue || minValue; // 使用初始值或最小值作为默认值
-            let currentValue = initialValue;
-            let resizing = false;
-            // 设置初始值并展示
-            const initialPosition = (initialValue - minValue) / (maxValue - minValue) * (slider.offsetWidth - 4);
-            handle.style.left = initialPosition + 'px';
-            process.style.width = initialPosition + 'px';
-
-            if (slider.classList.contains('smooth-slider')) {
-                // 设置平滑的slider
-
-                let isDragging = false;
-                tooltip.textContent = initialValue.toFixed(2);
-
-                function updateValueSmoothSlider(posX) {
-                        const smoothIndex = ((posX) / (slider.offsetWidth - 4));
-                        currentValue = smoothIndex * (maxValue - minValue) + minValue;
-                        tooltip.textContent = currentValue.toFixed(2);
-                        // document.getElementById('smoothValue').textContent = `Smooth Slider: ${value.toFixed(2)}`;
-                }
-
-                function updateSmoothSlider(e) {
-                    updateProcessBar(updateSlider(e));
-                    updateValueSmoothSlider(updateSlider(e));
-                }
-
-                function handleDragSmoothSlider(e) {
-                    if (isDragging) {
-                        updateSmoothSlider(e);
-                    }
-                }
-
-                handle.addEventListener('mousedown', function () {
-                    isDragging = true;
-                });
-
-                document.addEventListener('mousemove', handleDragSmoothSlider);
-
-                document.addEventListener('mouseup', function () {
-                    isDragging = false;
-                });
-
-                handle.addEventListener('touchstart', function () {
-                    isDragging = true;
-                });
-
-                document.addEventListener('touchmove', function (e) {
-                    if (isDragging) {
-                        handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
-                        e.preventDefault();
-                    }
-                });
-
-                document.addEventListener('touchend', function () {
-                    isDragging = false;
-                });
-
-                slider.addEventListener('touchstart', function (e) {
-                    // handleDragSmoothSlider(e.touches[0]); // 使用第一个触摸点的位置
-                    e.preventDefault(); // 防止默认的滚动行为
-                });
-
-                slider.addEventListener('click', function (e) {
-                    let posX = e.clientX - slider.getBoundingClientRect().left;
-                    handle.style.left = posX + 'px'
-                });
-
-                // 添加最小值和最大值提示
-                const minValueLabel = document.createElement('div');
-                minValueLabel.textContent = minValue.toFixed(2);
-                minValueLabel.style.position = 'absolute';
-                minValueLabel.style.bottom = '-35px';
-                slider.appendChild(minValueLabel);
-
-                const minValueLabelWidth = minValueLabel.offsetWidth;
-                minValueLabel.style.left = `calc(0% - ${minValueLabelWidth / 2}px)`;
-
-                const maxValueLabel = document.createElement('div');
-                maxValueLabel.textContent = maxValue.toFixed(2);
-                maxValueLabel.style.position = 'absolute';
-                maxValueLabel.style.bottom = '-35px';
-                slider.appendChild(maxValueLabel);
-
-                const maxValueLabelWidth = maxValueLabel.offsetWidth;
-                maxValueLabel.style.left = `calc(100% - ${maxValueLabelWidth / 2}px)`;
-
-            } else if (slider.classList.contains('segmented-slider')) {
-                // 设置分段的slider
-
-                const segmentWidth = 100 / segments;
-                let isDragging = false;
-                tooltip.textContent = initialValue.toFixed(2).replace(/\.?0+$/, '');
-
-                function updateValueSegmentSlider(posX) {
-                    const segmentIndex = Math.round(posX / ((slider.offsetWidth - 4) / segments));
-                    currentValue = segmentIndex * segmentWidth + minValue;
-                    tooltip.textContent = currentValue.toFixed(2).replace(/\.?0+$/, '');
-                    updateProcessBar(posX);
-                    // document.getElementById('segmentedValue').textContent = `Segmented Slider: ${value.toFixed(2).replace(/\.?0+$/, '')}`;
-                }
-
-                function updateSegmentSlider(e) {
-                    let posX = e.clientX - slider.getBoundingClientRect().left;
-                    updateSlider(e);
-                    updateProcessBar(posX);
-                }
-
-                function handleDragSegmentSlider(e) {
-                    if (isDragging) {
-                        updateSegmentSlider(e);
-                    }
-                }
-
-                function moveEnd() {
-                    isDragging = false;
-                    const segmentIndex = Math.round(handle.offsetLeft / ((slider.offsetWidth - 4) / segments));
-                    const segmentPosition = segmentIndex * ((slider.offsetWidth - 4) / segments);
-                    handle.style.left = segmentPosition + 'px';
-                    updateValueSegmentSlider(segmentPosition);
-                }
-
-                handle.addEventListener('mousedown', function () {
-                    isDragging = true;
-                });
-
-                document.addEventListener('mousemove', handleDragSegmentSlider);
-
-                document.addEventListener('mouseup', function () {
-                    moveEnd();
-                });
-
-                handle.addEventListener('touchstart', function () {
-                    isDragging = true;
-                });
-
-                document.addEventListener('touchmove', function (e) {
-                    if (isDragging) {
-                        handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
-                        e.preventDefault();
-                    }
-                });
-
-                document.addEventListener('touchend', function () {
-                    moveEnd();
-                });
-
-                slider.addEventListener('touchstart', function (e) {
-                    // handleDragSegmentSlider(e.touches[0]); // 使用第一个触摸点的位置
-                    e.preventDefault();
-                });
-
-                slider.addEventListener('click', function (e) {
-                    let posX = e.clientX - slider.getBoundingClientRect().left;
-                    if (posX < 0) {
-                        posX = 0;
-                    } else if (posX > (slider.offsetWidth - 4)) {
-                        posX = (slider.offsetWidth - 4);
-                    }
-                    const segmentIndex = Math.round(posX / ((slider.offsetWidth - 4) / segments));
-                    const segmentPosition = segmentIndex * ((slider.offsetWidth - 4) / segments);
-                    handle.style.left = segmentPosition + 'px';
-                    updateValueSegmentSlider(segmentPosition);
-                });
-
-                // 添加分段处提示数值
-                if (segments) {
-                    for (let i = 0; i < segments + 1; i++) {
-                        const segmentValueLabel = document.createElement('div');
-                        const segmentValue = minValue + i * (maxValue - minValue) / segments;
-                        segmentValueLabel.textContent = segmentValue.toFixed(2).replace(/\.?0+$/, '');
-                        segmentValueLabel.style.position = 'absolute';
-                        segmentValueLabel.style.bottom = '-35px';
-                        slider.appendChild(segmentValueLabel);
-
-                        // 获取标签宽度
-                        const labelWidth = segmentValueLabel.offsetWidth;
-                        segmentValueLabel.style.left = `calc(${(i / segments) * 100}% - ${labelWidth / 2}px)`;
-                    }
-                }
-
-                // 创建分段线
-                if (segments) {
-                    for (let i = 1; i < segments; i++) {
-                        const segment = document.createElement('div');
-                        segment.classList.add('slider-segment');
-                        segment.style.left = `calc(${segmentWidth * i}% - 1px)`;
-                        slider.appendChild(segment);
-                    }
-                }
+    if (root_path.includes('_test')) {
+        const neverShowIn7Days = localStorage.getItem(`(${root_path})neverShowIn7Days`);
+        if (neverShowIn7Days) {
+            const lastHideTime = new Date(parseInt(neverShowIn7Days, 10));
+            const now = new Date();
+            const diff = now - lastHideTime;
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            if (diff > sevenDays) {
+                localStorage.removeItem(`(${root_path})neverShowIn7Days`);
+            } else {
+                console.log("时间未到,不显示开发版本提示");
             }
+        } else {
+            const modal = document.getElementById("alert_modal");
+            modal.innerHTML = `
+                <modal>
+                    <modal_title_area>
+                        <modal_title>开发版本提示</modal_title>
+                        <modal_close_btn class="close_btn" onclick="hideModal(this);">
+                            <img alt="" class="modal_close_btn_img" src=""/>
+                        </modal_close_btn>
+                    </modal_title_area>
+                    <modal_content class="main_page_alert">
+                        <div>
+                            <p>你正在使用的是开发版本, 在继续之前, 你需要了解以下内容: </p>
+                            <article_list>开发版本可能包含部分未完成的功能和各种已知或未知的错误, 我们鼓励你在发现问题时及时提供反馈, 帮助我们进行改进.</article_list>
+                            <article_list>开发版本可能包含部分未启用的或处于实验阶段的功能, 这些功能可能会在后续的版本发生变动, 请不要过度依赖于这些功能.</article_list>
+                            <article_list>开发版本为快速迭代版本, 更新频率较高, 请及时关注版本更新以了解改进和修复. 在提交建议或反馈之前请先检查你的版本.</article_list>
+                        </div>
+                    </modal_content>
+                    <modal_checkbox_area>
+                        <custom-checkbox active="off" class="neverShowIn7Days" status="enabled"></custom-checkbox>7天之内不再提示</modal_checkbox_area>
+                    <modal_button_area>
+                        <modal_button_group>
+                            <modal_button_list>
+                                <custom-button data="modal|normal|||false||" js="toUpdatelog();hideAlertModal(this);" text="开发日志"></custom-button>
+                                <custom-button data="modal|normal|||false||" js="hideAlertModal(this);" text="继续"></custom-button>
+                            </modal_button_list>
+                        </modal_button_group>
+                    </modal_button_area>
+                </modal>`;
+            showAlertModal();
+            console.log("开发环境,显示开发版本提示");
+        }
 
-            function updateSlider(e) {
-                let posX = e.clientX - slider.getBoundingClientRect().left;
-                if (posX < 0) {
-                    posX = 0;
-                } else if (posX > (slider.offsetWidth - 4)) {
-                    posX = (slider.offsetWidth - 4);
-                }
-                handle.style.left = posX + 'px';
-                return posX;
-            }
+        console.log("开发环境,不显示内测邀请");
+    } else {
+        const randomValue = Math.random();
+        if (randomValue < 0.02) {
+            const modal = document.getElementById("alert_modal");
+            modal.innerHTML = `
+                <modal>
+                    <modal_title_area>
+                        <modal_title>内部测试邀请</modal_title>
+                        <modal_close_btn class="close_btn" onclick="hideModal(this);">
+                            <img alt="" class="modal_close_btn_img" src=""/>
+                        </modal_close_btn>
+                    </modal_title_area>
+                    <modal_content class="main_page_alert">
+                        <div>
+                            <p>哇哦! 祝贺你被选中参加测试, 成为小部分可以抢先体验新版本的用户! 这里有一些你需要了解的内容: </p>
+                            <article_list>请加入我们的内测群组以了解最新开发动态: <a href="https://t.me/Spectrollay_MCW" target="_blank" onclick="playSound1();">Telegram</a> / <a href="https://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=WVA6aPqtv99hiYleW7vUq5OsBIufCAB1&authKey=B0%2BaXMCTqnmQrGh0wzCZTyWTIPyHS%2FPEM5QXcFfVwroFowNnzs6Yg1er1%2F8Fekqp&noverify=0&group_code=833473609" target="_blank" onclick="playSound1();">QQ</a> / <a href="https://yhfx.jwznb.com/share?key=VyTE7W7sLwRl&ts=1684642802" target="_blank" onclick="playSound1();">云湖</a></article_list>
+                            <article_list>不同于正式版本, 开发版本并不稳定, 可能存在部分问题以及正在测试的内容. 因此我们需要你在发现问题或有想法时及时向我们反馈.</article_list>
+                            <article_list>悄悄地说一句, 积极参与内测可能会有奖励哦.</article_list>
+                            <p>如果你可以承受内测带来的风险并同意上述内容, 请选择加入测试, 否则请取消.</p>
+                        </div>
+                    </modal_content>
+                    <modal_button_area>
+                        <modal_button_group>
+                            <modal_button_list>
+                                <custom-button data="modal|normal|||false||" js="hideAlertModal(this);" text="取消"></custom-button>
+                                <custom-button data="modal|green|||false||" js="hideAlertModal(this);openLink('https://spectrollay.github.io/minecraft_repository_test/');" text="加入测试"></custom-button>
+                            </modal_button_list>
+                        </modal_button_group>
+                    </modal_button_area>
+                </modal>`;
+            showAlertModal();
+            console.log("显示内测邀请");
+        }
 
-            function replaceHandle() {
-                const rect = slider.getBoundingClientRect();
-                const newPosition = (currentValue - minValue) / (maxValue - minValue) * rect.width;
-                handle.style.left = newPosition + 'px';
-            }
+        console.log("正式环境,不显示开发版本提示");
+    }
 
-            function updateProcessBar(posX) {
-                process.style.width = posX + 'px';
-            }
+    function showAlertModal() {
+        const overlay = document.getElementById("overlay_alert_modal");
+        const modal = document.getElementById("alert_modal");
+        overlay.style.display = "block";
+        modal.style.display = "block";
+        console.log("显示提示弹窗");
+    }
 
-            window.addEventListener('resize', function () {
-                if (!resizing) {
-                    resizing = true;
-                    setTimeout(function () {
-                        resizing = false;
-                    }, 0);
-                    process.style.transition = 'none';
-                    handle.style.transition = 'none';
-                    replaceHandle();
-                    updateProcessBar(handle.offsetLeft);
-                    setTimeout(function () {
-                        process.style.transition = 'width 100ms linear';
-                        handle.style.transition = 'left 100ms linear';
-                    }, 0);
-                }
-            });
-        });
+    function hideAlertModal(button) {
+        const overlay = document.getElementById("overlay_alert_modal");
+        const modal = document.getElementById("alert_modal");
+        playSound(button);
+        overlay.style.display = "none";
+        modal.style.display = "none";
+        console.log("关闭提示弹窗");
     }
 </script>
 
-</body>
+<style>
+    .edition_block {
+        height: 80px;
+        cursor: pointer;
+    }
+
+    .edition_block:hover {
+        background-color: #58585A;
+    }
+
+    .edition_block:active {
+        border: 2px solid #3D3E3F;
+        background-color: #3D3E3F;
+    }
+
+    .main_page_alert {
+        text-align: left;
+    }
+
+    .notice_table {
+        width: auto;
+    }
+
+    .notice_table, .notice_table th, .notice_table td {
+        border: 0;
+    }
+
+    .notice_table td {
+        height: 25px;
+    }
+
+    .notice_table .left_table {
+        text-align: right;
+    }
+
+    .notice_table .right_table {
+        text-align: left;
+    }
+</style>
+
 </html>
