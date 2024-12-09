@@ -15,6 +15,8 @@ body:
         ### 确定现有的PR和代码并没有和该建议相同或类似的方法.
         ### 如果你不知道如何有效且精准地表述,我们建议强烈建议你先阅读[《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md).
 
+        ---
+
   - type: checkboxes
     id: terms
     attributes:
@@ -76,4 +78,5 @@ body:
   - type: markdown
     attributes:
       value: |
+        ---
         ## 感谢你的建议!我们将在在后续开发中评估你的建议.
